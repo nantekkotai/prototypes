@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>おしゃれカフェ検索(sample)</title>
+
+<!-- Bootstrap core CSS -->
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+<style>
+.starter-template {
+  text-align: center;
+}
+.enable .current-btn,
+.loading .loader { display: block; }
+.loading .current-btn,
+.enable .loader { display: none; }
+.loader { margin: 0 auto; }
+</style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="starter-template">
+      <h1>おしゃれカフェ検索</h1>
+      <p class="lead">
+        近くで子連れもOK！<br />おしゃれなカフェを見つけます！
+      </p>
+    </div>
+
+    <div class="row">
+      <div class="" style="max-width:200px; margin:10px auto 40px;" data-bind="css: loading() === true ? 'loading' : 'enable'">
+        <button type="button" class="btn btn-default btn-lg btn-block current-btn" data-bind="click: currentPosition">現在地から検索</button>
+        <img src="../iko-ze/loading-spokes.svg" class="loader" alt="Loading icon" width="32" height="32" />
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="list-group" data-bind="foreach: cafes">
+        <a href="#" class="list-group-item" data-bind="attr: {href: $data.url}" target="_blank">
+          <div class="media">
+            <div class="pull-left">
+              <img src="" alt="" width="168" height="125" class="media-object" data-bind="attr: {src: $data.photo}">
+            </div>
+            <div class="media-body">
+              <h4 class="list-group-item-heading" data-bind="text: $data.name">List group item heading</h4>
+              <p class="list-group-item-text">
+                <span data-bind="text: $data.catch"></span>
+                <br />アクセス: <span data-bind="text: $data.access"></span>
+                <br />住所: <span data-bind="text: $data.address"></span>
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /.container -->
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/knockout/3.1.0/knockout-min.js"></script>
+<script>
+
+// hotpapperからデータを取得
+function hotpepper(params, success, error) {
+  var defaultParams = {
+        key: '92bc8f063c0ca692',
+        lat: null,
+        lng: null,
+        range: 5,
+        order: 4,
+        genre: 'G014',
+        format: 'jsonp',
+        child: 1
+      },
+      data = $.extend(defaultParams, params);
+
+  $.ajax({
+    url: 'http://webservice.recruit.co.jp/hotpepper/gourmet/v1/',
+    dataType: 'jsonp',
+    data: data,
+    success: function (res) {
+      if (success && typeof success == 'function') success(res);
+    },
+    error: function (err) {
+      if (error && typeof success == 'function') error(err);
+    }
+  });
+}
+
+// knockout view-model
+function ViewModel() {
+  var self = this;
+  this.latitude = ko.observable('');
+  this.longitude = ko.observable('');
+  this.cafes = ko.observableArray([]);
+  this.loading = ko.observable(false);
+
+  // 現在地を取得する
+  this.currentPosition = function () {
+    self.loading(true);
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        self.latitude(pos.coords.latitude);
+        self.longitude(pos.coords.longitude);
+        self.findCafe();
+      },
+      function () {
+        self.loading(false);
+      }
+    );
+  }
+
+  // hotpepperからカフェの情報を取得する
+  this.findCafe = function () {
+    hotpepper({
+      lat: self.latitude(),
+      lng: self.longitude()
+    },
+    function (res) {
+      self.loading(false);
+      console.log("[res]", res);
+      if (!res || !res.results || !res.results.shop) return;
+      $.each(res.results.shop, function (i, shop) {
+        self.cafes.push(new Spot(shop));
+      });
+    },
+    function (err) {
+      self.loading(false);
+    });
+  }
+}
+
+// knockout CafeSpot
+function Spot(res) {
+  var self = this;
+
+  $.each(['name', 'address', 'photo', 'url', 'access', 'catch'], function (i, key) {
+    if (key == 'photo') {
+      self[key] = ko.observable(res.photo.pc.m || null);
+
+    } else if (key == 'url') {
+      self[key] = ko.observable(res.urls.pc || null);
+
+    } else {
+      self[key] = ko.observable(res[key]);
+    }
+  });
+}
+
+var cafeVM;
+$(function(){
+
+// TODO: 現在地取得ボタン -> geolocationAPI取得
+// TODO: 現在地を取得したらそれをもとにhotpapperAPIを取得
+// TODO: APIからデータを取得したらリストに表示する
+
+cafeVM = new ViewModel();
+ko.applyBindings(cafeVM);
+
+});
+</script>
+</body>
+</html>

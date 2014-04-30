@@ -31,9 +31,9 @@
   <div class="container">
 
     <div class="starter-template">
-      <h1>おしゃれカフェ検索</h1>
+      <h2>おしゃれカフェ検索</h2>
       <p class="lead">
-        近くで子連れもOK！<br />おしゃれなカフェを見つけます！
+        子連れがOKな<br />おしゃれカフェを見つけます
       </p>
     </div>
 
@@ -48,16 +48,13 @@
       <div class="list-group" data-bind="foreach: cafes">
         <a href="#" class="list-group-item" data-bind="attr: {href: $data.url}" target="_blank">
           <div class="media">
-            <div class="pull-left">
-              <img src="" alt="" width="168" height="125" class="media-object" data-bind="attr: {src: $data.photo}">
+            <div class="pull-right">
+              <img src="" alt="" width="84" height="62" class="media-object" data-bind="attr: {src: $data.photo}">
             </div>
             <div class="media-body">
               <h4 class="list-group-item-heading" data-bind="text: $data.name">List group item heading</h4>
-              <p class="list-group-item-text">
-                <span data-bind="text: $data.catch"></span>
-                <br />アクセス: <span data-bind="text: $data.access"></span>
-                <br />住所: <span data-bind="text: $data.address"></span>
-              </p>
+              <p class="list-group-item-text" data-bind="text: $data.catch" style="margin-bottom:0.5em;"></p>
+              <p class="list-group-item-text small" data-bind="text: $data.access"></p>
             </div>
           </div>
         </a>

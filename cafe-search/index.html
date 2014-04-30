@@ -15,6 +15,27 @@
 <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 <style>
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+#footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+  text-align: center;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+
 .starter-template {
   text-align: center;
 }
@@ -32,8 +53,8 @@
 
     <div class="starter-template">
       <h2>おしゃれカフェ検索</h2>
-      <p class="lead">
-        子連れがOKな<br />おしゃれカフェを見つけます
+      <p>
+        子連れも大丈夫！<br />近くの<strong>おしゃれカフェ</strong>を見つけます
       </p>
     </div>
 
@@ -63,6 +84,14 @@
 
   </div><!-- /.container -->
 
+  <footer id="footer">
+    <div class="container">
+      <p class="text-muted">
+        Powered by <a href="http://webservice.recruit.co.jp/">ホットペッパー Webサービス</a>
+      </p>
+    </div>
+  </footer>
+
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
@@ -81,7 +110,8 @@ function hotpepper(params, success, error) {
         order: 4,
         genre: 'G014',
         format: 'jsonp',
-        child: 1
+        child: 1,
+        count: 20
       },
       data = $.extend(defaultParams, params);
 
